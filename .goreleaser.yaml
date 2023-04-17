@@ -38,7 +38,6 @@ brews:
     description: "A CLI tool for parsing and exporting vault driven .env files"
     folder: Formula
     download_strategy: CurlDownloadStrategy
-    custom_require: lib/private_strategy
     tap:
       owner: mschmitt61
       name: vaultenv
