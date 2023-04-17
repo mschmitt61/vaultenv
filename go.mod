@@ -1,4 +1,4 @@
-module github.com/massmutual/vaultenv
+module github.com/mschmitt61/vaultenv
 
 go 1.20
 

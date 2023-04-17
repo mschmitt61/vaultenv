@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	helpers "github.com/massmutual/vaultenv/helpers"
+	helpers "github.com/mschmitt61/vaultenv/helpers"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
