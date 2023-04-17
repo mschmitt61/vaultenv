@@ -32,8 +32,17 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-
-# The lines beneath this are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+brews:
+  - name: vaultenv
+    homepage: https://github.com/mschmitt61/vaultenv
+    description: "A CLI tool for parsing and exporting vault driven .env files"
+    folder: Formula
+    download_strategy: CurlDownloadStrategy
+    custom_require: lib/private_strategy
+    tap:
+      owner: mschmitt61
+      name: vaultenv
+      branch: develop
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    install: |
+      bin.install "vaultenv"
