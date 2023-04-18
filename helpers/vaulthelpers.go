@@ -119,7 +119,8 @@ func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, e
 			}
 			_, exists := retMap[envName]
 			if exists {
-				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s", path, envName)
+				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s, skipping", path, envName)
+				continue
 			}
 			retMap[envName] = vaultValue
 		}
@@ -129,7 +130,8 @@ func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, e
 			split := strings.Split(line, "=")
 			_, exists := retMap[split[0]]
 			if exists {
-				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s", path, split[0])
+				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s, skipping", path, split[0])
+				continue
 			}
 			retMap[split[0]] = split[1]
 		}

@@ -16,10 +16,11 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Given an input template file and output file, take the input file and generate the env variables based on the vault values",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) > 2 || args[0] != "" {
-			fmt.Println("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
-		}
 		app := helpers.InitWrapper()
+
+		if len(args) > 2 || args[0] != "" {
+			app.Logger.Fatalf("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
+		}
 
 		pwd, err := os.Getwd()
 		if err != nil {
@@ -56,14 +57,4 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// generateCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// generateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

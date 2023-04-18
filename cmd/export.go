@@ -12,12 +12,12 @@ import (
 )
 
 // applyCmd represents the apply command
-var applyCmd = &cobra.Command{
-	Use:   "apply",
+var exportCmd = &cobra.Command{
+	Use:   "export",
 	Short: "Exports all the variables in the input file to the local environment",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args) > 2 || args[0] != "" {
+		if len(args) != 1 || args[0] == "" {
 			fmt.Println("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
 		}
 		app := helpers.InitWrapper()
@@ -35,15 +35,5 @@ var applyCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(applyCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// applyCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// applyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(exportCmd)
 }
