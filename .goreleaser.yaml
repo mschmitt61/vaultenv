@@ -1,32 +1,45 @@
 builds:
-  - binary: mediumautopost
-    goos:
-      - darwin
-      - linux
-    goarch:
-      - amd64
-      - arm64
-    env:
+  - env:
       - CGO_ENABLED=0
-    flags:
-      - -mod=vendor
-
-release:
-  prerelease: auto
-
-universal_binaries:
-  - replace: true
-
-brews:
-  -
-    name: mschmitt61
-    homepage: "https://github.com/mschmitt61/vaultenv"
-    tap:
-      owner: mschmitt61
-      name: homebrew-mschmitt61
-    commit_author:
-      name: mschmitt61
-      email: mschmitt61@massmutual.com
-
+    goos:
+      - linux
+      - windows
+      - darwin
+    binary: vaultenv
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  use: github
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - typo
+brews:
+  - name: vaultenv
+    homepage: https://github.com/massmutual/vaultenv
+    folder: Formula
+    tap:
+      owner: mschmitt61
+      name: vaultenv
+      branch: develop
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    install: |
+      bin.install "vaultenv"
