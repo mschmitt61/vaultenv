@@ -34,14 +34,16 @@ changelog:
       - '^test:'
 brews:
   - name: vaultenv
-    homepage: https://github.com/mschmitt61/vaultenv
+    homepage: mschmitt61
     description: "A CLI tool for parsing and exporting vault driven .env files"
     folder: Formula
     download_strategy: CurlDownloadStrategy
     tap:
       owner: mschmitt61
-      name: vaultenv
-      branch: develop
+      name: homebrew-mschmitt61
+    commit_author:
+      name: mschmitt61
+      email: mschmitt61@massmutual.com
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     install: |
       bin.install "vaultenv"
