@@ -22,7 +22,7 @@ brews:
       # Repository name.
       #
       # Templates: allowed
-      name: homebrew-vaultenv
+      name: homebrew-mschmitt61
 
       # Optionally a branch can be provided.
       #
