@@ -1,45 +1,60 @@
-builds:
-  - env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-      - windows
-      - darwin
-    binary: vaultenv
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
-changelog:
-  sort: asc
-  use: github
-  groups:
-    - title: Features
-      regexp: "^.*feat[(\\w)]*:+.*$"
-      order: 0
-    - title: 'Bug fixes'
-      regexp: "^.*fix[(\\w)]*:+.*$"
-      order: 1
-    - title: Others
-      order: 999
-  filters:
-    exclude:
-      - typo
+# .goreleaser.yaml
 brews:
-  - name: vaultenv
-    homepage: https://github.com/massmutual/vaultenv
-    folder: Formula
+  -
+    # Name of the recipe
+    #
+    # Default: ProjectName
+    # Templates: allowed
+    name: vaultenv
+
+    # NOTE: make sure the url_template, the token and given repo (github or
+    # gitlab) owner and name are from the same kind.
+    # We will probably unify this in the next major version like it is
+    # done with scoop.
+
+    # GitHub/GitLab repository to push the formula to
     tap:
+      # Repository owner.
+      #
+      # Templates: allowed
       owner: mschmitt61
-      name: vaultenv
-      branch: develop
+
+      # Repository name.
+      #
+      # Templates: allowed
+      name: homebrew-vaultenv
+
+      # Optionally a branch can be provided.
+      #
+      # Default: default repository branch.
+      #
+      # Templates: allowed
+      branch: main
+
+    # URL which is determined by the given Token (github, gitlab or gitea).
+    #
+    # Default depends on the client.
+    # Templates: allowed
+    #url_template: "https://github.mycompany.com/foo/bar/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # Allows you to set a custom download strategy. Note that you'll need
+    # to implement the strategy and add it to your tap repository.
+    # Example: https://docs.brew.sh/Formula-Cookbook#specifying-the-download-strategy-explicitly
+    download_strategy: CurlDownloadStrategy
+
+    # Allows you to add a custom require_relative at the top of the formula
+    # template.
+    custom_require: custom_download_strategy
+
+    # Git author used to commit to the repository.
+    commit_author:
+      name: mschmitt61
+      email: mschmitt61@massmutual.com
+
+    # The project name and current git tag are used in the format string.
+    #
+    # Templates: allowed
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    install: |
-      bin.install "vaultenv"
+
+    # Folder inside the repository to put the formula.
+    folder: Formula
