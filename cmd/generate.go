@@ -18,9 +18,11 @@ var generateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		app := helpers.InitWrapper()
 
-		if len(args) > 2 || args[0] != "" {
+		/*
+		if len(args) > 2 || args[0] == "" {
 			app.Logger.Fatalf("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
 		}
+		*/
 
 		pwd, err := os.Getwd()
 		if err != nil {

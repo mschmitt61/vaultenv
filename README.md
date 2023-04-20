@@ -12,7 +12,8 @@ brew tap mschmitt61/mschmitt61
 brew install mschmitt61/mschmitt61/vaultenv
 
 # To update the package
-brew update && brew upgrade mschmitt61/mschmitt61/vaultenv
+brew update 
+brew upgrade mschmitt61/mschmitt61/vaultenv
 ```
 
 You'll also need a couple of environment variables to make use of this library
