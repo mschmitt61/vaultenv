@@ -1,9 +1,11 @@
 name: goreleaser
 
 on:
+  pull_request:
   push:
-    tags:
-      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   goreleaser:
@@ -11,20 +13,15 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       -
-        name: Fetch all tags
-        run: git fetch --force --tags
-      -
         name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.20
+        uses: actions/setup-go@v3
       -
         name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v4
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
