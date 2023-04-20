@@ -7,7 +7,7 @@ Special thanks to @respondcreate for the support and feedback!
 First, setup the tap and install via brew
 
 ```
-brew tap homebrew-mschmitt61/mschmitt61
+brew tap mschmitt61/mschmitt61
 
 brew install mschmitt61/mschmitt61/vaultenv
 ```

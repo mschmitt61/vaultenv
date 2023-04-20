@@ -42,10 +42,6 @@ brews:
     # Example: https://docs.brew.sh/Formula-Cookbook#specifying-the-download-strategy-explicitly
     download_strategy: CurlDownloadStrategy
 
-    # Allows you to add a custom require_relative at the top of the formula
-    # template.
-    custom_require: custom_download_strategy
-
     # Git author used to commit to the repository.
     commit_author:
       name: mschmitt61
