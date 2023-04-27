@@ -5,25 +5,29 @@ package cmd
 
 import (
 	"fmt"
-	helpers "github.com/massmutual/vaultenv/helpers"
+	helpers "github.com/mschmitt61/vaultenv/helpers"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
 )
 
-// generateCmd represents the generate command
-var generateCmd = &cobra.Command{
+// GenerateCmd represents the generate command
+var GenerateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Given an input template file and output file, take the input file and generate the env variables based on the vault values",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) > 2 || args[0] != "" {
-			fmt.Println("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		app, err := helpers.InitApp()
+		if err != nil {
+			return fmt.Errorf("failed to initialize vaultenv: %v", err)
 		}
-		app := helpers.InitWrapper()
+
+		if len(args) != 2 {
+			return fmt.Errorf("`vaultenv generate` command requires exactly two arguments - an input file and an outputfile")
+		}
 
 		pwd, err := os.Getwd()
 		if err != nil {
-			app.Logger.Fatalf("Failed to get working directory, exiting")
+			return fmt.Errorf("failed to get working directory: %v", err)
 		}
 
 		inputFile := args[0]
@@ -34,12 +38,12 @@ var generateCmd = &cobra.Command{
 
 		kvs, err := app.ReadEnvFile(pathToInputFile)
 		if err != nil {
-			app.Logger.Fatalf("Failed to read env file %s exiting", pathToInputFile)
+			return fmt.Errorf("failed to read env file %s: %v", pathToInputFile, err) 
 		}
 
 		file, err := os.Create(pathToOutputFile)
 		if err != nil {
-			app.Logger.Fatalf("Failed to create output file %s exiting", pathToOutputFile)
+			return fmt.Errorf("failed to create output file %s: %v", pathToOutputFile, err) 
 		}
 		defer file.Close()
 
@@ -47,23 +51,14 @@ var generateCmd = &cobra.Command{
 			stringToWrite := fmt.Sprintf("%s=%s\n", k, v)
 			bytesWritten, err := file.WriteString(stringToWrite)
 			if err != nil {
-				app.Logger.Fatalf("Failed to write to file %s exiting", pathToOutputFile)
+				return fmt.Errorf("failed to write to file %s: %v", pathToOutputFile, err)
 			}
 			app.Logger.Printf("Wrote %d bytes to file %s", bytesWritten, pathToOutputFile)
 		}
+		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(generateCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// generateCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// generateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	RootCmd.AddCommand(GenerateCmd)
 }

@@ -1,0 +1,47 @@
+# .goreleaser.yaml
+brews:
+  -
+    # Name of the recipe
+    #
+    # Default: ProjectName
+    # Templates: allowed
+    name: vaultenv
+
+    # NOTE: make sure the url_template, the token and given repo (github or
+    # gitlab) owner and name are from the same kind.
+    # We will probably unify this in the next major version like it is
+    # done with scoop.
+
+    # GitHub/GitLab repository to push the formula to
+    tap:
+      # Repository owner.
+      #
+      # Templates: allowed
+      owner: mschmitt61
+
+      # Repository name.
+      #
+      # Templates: allowed
+      name: homebrew-mschmitt61
+
+      # Optionally a branch can be provided.
+      #
+      # Default: default repository branch.
+      #
+      # Templates: allowed
+      branch: main
+
+    download_strategy: CurlDownloadStrategy
+
+    # Git author used to commit to the repository.
+    commit_author:
+      name: mschmitt61
+      email: mschmitt61@massmutual.com
+
+    # The project name and current git tag are used in the format string.
+    #
+    # Templates: allowed
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+
+    # Folder inside the repository to put the formula.
+    folder: Formula

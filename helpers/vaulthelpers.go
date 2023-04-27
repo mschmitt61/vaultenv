@@ -20,28 +20,28 @@ type VaultWrapper struct {
 	Logger      *log.Logger
 }
 
-func InitWrapper() *VaultWrapper {
+func InitApp() (*VaultWrapper, error) {
 	prefix := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 94, "[vaultenv] ")
 	logger := log.New(os.Stdout, prefix, log.LstdFlags)
 
 	vaultAddr, found := os.LookupEnv("VAULT_ADDR")
 	if !found {
-		logger.Fatalf("Cannot find environment variable VAULT_ADDR, please set and rerun")
+		return nil, fmt.Errorf("failed to find environment variable VAULT_ADDR, please set and rerun")
 	}
 
 	vaultRole, found := os.LookupEnv("VAULT_ROLE")
 	if !found {
-		logger.Fatalf("Cannot find environment variable VAULT_ROLE, please set and rerun")
+		return nil, fmt.Errorf("failed to find environment variable VAULT_ROLE, please set and rerun")
 	}
 
 	vaultSecret, found := os.LookupEnv("VAULT_SECRET")
 	if !found {
-		logger.Fatalf("Cannot find environment variable VAULT_SECRET, please set and rerun")
+		return nil, fmt.Errorf("failed to find environment variable VAULT_SECRET, please set and rerun")
 	}
 
 	vault, err := initVault(vaultAddr, vaultRole, vaultSecret)
 	if err != nil {
-		logger.Fatalf("Error initializing vault client: %v", err)
+		return nil, fmt.Errorf("failed to initialize vault client: %v", err)
 	}
 
 	vaultWrapper := VaultWrapper{
@@ -52,7 +52,7 @@ func InitWrapper() *VaultWrapper {
 		Logger:      logger,
 	}
 
-	return &vaultWrapper
+	return &vaultWrapper, nil
 }
 
 func initVault(vaultAddr string, vaultRole string, vaultSecret string) (*api.Client, error) {
@@ -86,7 +86,7 @@ func initVault(vaultAddr string, vaultRole string, vaultSecret string) (*api.Cli
 func (vaultWrapper *VaultWrapper) ReadFromVault(path string, value string) (string, error) {
 	secret, err := vaultWrapper.Client.Logical().Read(fmt.Sprintf("secret/%s", path))
 	if err != nil {
-		return "error: ", fmt.Errorf("failed to read from vault: %v", err)
+		return "", fmt.Errorf("failed to read from vault: %v", err)
 	}
 
 	return fmt.Sprintf("%v", secret.Data[value]), nil
@@ -96,7 +96,7 @@ func (vaultWrapper *VaultWrapper) ReadFromVault(path string, value string) (stri
 func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		vaultWrapper.Logger.Fatalf("Failed to read file %s: %v", path, err)
+		return nil, fmt.Errorf("failed to read file %s: %v", path, err)
 	}
 	defer file.Close()
 
@@ -115,11 +115,12 @@ func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, e
 			vaultKey := vaultSplit[2]
 			vaultValue, err := vaultWrapper.ReadFromVault(vaultPath, vaultKey)
 			if err != nil {
-				vaultWrapper.Logger.Fatalf("Failed to read from vault %s: %v", path, err)
+				return nil, fmt.Errorf("failed to read from vault %s: %v", path, err)
 			}
 			_, exists := retMap[envName]
 			if exists {
-				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s", path, envName)
+				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s, skipping", path, envName)
+				continue
 			}
 			retMap[envName] = vaultValue
 		}
@@ -129,39 +130,43 @@ func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, e
 			split := strings.Split(line, "=")
 			_, exists := retMap[split[0]]
 			if exists {
-				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s", path, split[0])
+				vaultWrapper.Logger.Printf("Found duplicate value in env file %s: %s, skipping", path, split[0])
+				continue
 			}
 			retMap[split[0]] = split[1]
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		vaultWrapper.Logger.Fatalf("Error when reading %s: %v", path, err)
+		return nil, fmt.Errorf("failed when reading %s: %v", path, err)
 	}
 	return retMap, nil
 }
 
+
+// Both below functions won't work for exporting to the local terminal environment because they are in a child process
 // Export all the variables in the map to the local environment
-func (vaultWrapper *VaultWrapper) ExportEnvs(envMap map[string]string) {
-	for key, value := range envMap {
-		os.Setenv(key, value)
-	}
-}
+// func (vaultWrapper *VaultWrapper) ExportEnvs(envMap map[string]string) {
+// 	for key, value := range envMap {
+// 		os.Setenv(key, value)
+// 	}
+// }
 
 // Export all the variables in the file to the local environment
-func (vaultWrapper *VaultWrapper) ExportEnvFile(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		vaultWrapper.Logger.Fatalf("Failed to read file %s: %v", path, err)
-	}
-	defer file.Close()
+// func (vaultWrapper *VaultWrapper) ExportEnvFile(path string) error {
+// 	file, err := os.Open(path)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to read file %s: %v", path, err)
+// 	}
+// 	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		split := strings.Split(line, "=")
-		key := split[0]
-		value := split[1]
-		os.Setenv(key, value)
-	}
-}
+// 	scanner := bufio.NewScanner(file)
+// 	for scanner.Scan() {
+// 		line := scanner.Text()
+// 		split := strings.Split(line, "=")
+// 		key := split[0]
+// 		value := split[1]
+// 		os.Setenv(key, value)
+// 	}
+// 	return nil
+// }
