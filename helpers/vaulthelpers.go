@@ -124,6 +124,10 @@ func (vaultWrapper *VaultWrapper) ReadEnvFile(path string) (map[string]string, e
 			}
 			retMap[envName] = vaultValue
 		}
+		// Found a comment, skip it
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
 		// Found a normal environment variable, we still want to export it
 		if strings.Contains(line, "=") && !strings.Contains(line, "vault::") {
 			vaultWrapper.Logger.Printf("Found env variable %s", line)
